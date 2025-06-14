@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Cycle Store</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            background-color: #C0392B; /* Lighter Red background */
+            color: #fff; /* White text */
+            scroll-behavior: smooth;
+            overflow-x: hidden; /* Prevent horizontal scroll due to animations */
+        }
+        /* Gold accent for a premium look */
+        .text-gold-accent {
+            color: #FFD700; /* Gold color */
+        }
+        .bg-gold-accent {
+            background-color: #FFD700;
+        }
+        .border-gold-accent {
+            border-color: #FFD700;
+        }
+        .section-padding {
+            padding: 8rem 0;
+        }
+        .navbar-link:hover {
+            color: #FFD700; /* Gold on hover */
+        }
+        .btn-primary {
+            background-color: #fff;
+            color: #C0392B;
+            font-weight: bold;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition-property: all;
+            transition-duration: 300ms;
+            transition-timing-function: ease-in-out;
+            border: 2px solid #fff;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background-color: #e5e7eb;
+            color: #C0392B;
+            border-color: #FFD700; /* Gold border on hover */
+        }
+        .gallery-img {
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: scale(1);
+            transition-property: transform;
+            transition-duration: 300ms;
+            transition-timing-function: ease-in-out;
+            width: 100%;
+            height: 16rem;
+            object-fit: cover;
+        }
+        .gallery-img:hover {
+            transform: scale(1.05);
+        }
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #1f2937;
+            font-family: 'Times New Roman', serif;
+        }
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #FFD700; /* Gold border on focus */
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+        }
+        .footer-link:hover {
+            color: #FFD700; /* Gold on hover */
+        }
+        .social-icon {
+            filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%); /* White color by default */
+            transition: filter 0.3s ease-in-out;
+        }
+        .social-icon:hover {
+            filter: invert(80%); /* Light grey on hover */
+        }
+        /* Custom social icon for white background */
+        .social-icon-red {
+            color: #C0392B; /* Lighter red color */
+            transition: color 0.3s ease-in-out;
+        }
+        .social-icon-red:hover {
+            color: #FFD700; /* Gold on hover */
+        }
+
+        /* Custom Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 1s ease-out forwards;
+        }
+
+        @keyframes bounceIn {
+            0%, 20%, 40%, 60%, 80%, 100% { transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+            0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); }
+            20% { transform: scale3d(1.1, 1.1, 1.1); }
+            40% { transform: scale3d(0.9, 0.9, 0.9); }
+            60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); }
+            80% { transform: scale3d(0.97, 0.97, 0.97); }
+            100% { opacity: 1; transform: scale3d(1, 1, 1); }
+        }
+        .animate-bounce-in {
+            animation: bounceIn 1s forwards;
+        }
+
+        /* Mobile menu specific styles */
+        @media (max-width: 767px) {
+            .navbar-links {
+                display: none; /* Hidden by default on small screens */
+                flex-direction: column;
+                width: 100%;
+                background-color: #C0392B;
+                padding: 1rem 0;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin-top: 1rem; /* Space between logo and menu */
+            }
+            .navbar-links.active {
+                display: flex; /* Shown when active */
+            }
+            .navbar-link {
+                margin: 0.5rem 0;
+                padding: 0.5rem 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="text-white p-6 fixed w-full z-20 shadow-lg" style="background-color: #C0392B;" data-aos="fade-down">
+        <nav class="container mx-auto flex flex-wrap justify-center items-center relative">
+            <div class="flex items-center">
+                <img src="https://lh3.googleusercontent.com/p/AF1QipPVNT810PPAyfTFPJMUI7hz4bWofoSDoQkDrIlH=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/48x48/FFF/C0392B?text=Logo';" alt="The Cycle Store Logo" class="h-12 w-12 mr-3 rounded-full border-2 border-gold-accent p-1" data-aos="zoom-in" data-aos-delay="200"/>
+                <a href="#home" class="text-3xl font-bold text-gold-accent" data-aos="fade-left" data-aos-delay="200">THE CYCLE STORE</a>
+            </div>
+
+            <div class="md:hidden absolute top-1/2 right-4 -translate-y-1/2">
+                <button id="menu-toggle" class="text-white focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="w-full navbar-links hidden md:flex md:justify-center md:mt-4" id="navbar-links">
+                <a href="#home" class="navbar-link mx-4 text-lg font-semibold transition-colors duration-300" data-aos="fade-left" data-aos-delay="300">Home</a>
+                <a href="#about" class="navbar-link mx-4 text-lg font-semibold transition-colors duration-300" data-aos="fade-left" data-aos-delay="400">About</a>
+                <a href="#products" class="navbar-link mx-4 text-lg font-semibold transition-colors duration-300" data-aos="fade-left" data-aos-delay="500">Products</a>
+                <a href="#gallery" class="navbar-link mx-4 text-lg font-semibold transition-colors duration-300" data-aos="fade-left" data-aos-delay="600">Gallery</a>
+                <a href="#contact" class="navbar-link mx-4 text-lg font-semibold transition-colors duration-300" data-aos="fade-left" data-aos-delay="700">Contact Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main id="app-content">
+        </main>
+
+    <footer class="bg-gray-900 text-white p-8 text-center border-t border-gold-accent" data-aos="fade-up">
+        <div class="container mx-auto">
+            <p class="text-lg mb-4" data-aos="fade-up" data-aos-delay="300">© 2025 The Cycle Store. All rights reserved.</p>
+            <div class="flex justify-center space-x-6" data-aos="fade-up" data-aos-delay="200">
+                <a href="#home" class="footer-link text-md transition-colors duration-300">Home</a>
+                <a href="#about" class="footer-link text-md transition-colors duration-300">About</a>
+                <a href="#products" class="footer-link text-md transition-colors duration-300">Products</a>
+                <a href="#gallery" class="footer-link text-md transition-colors duration-300">Gallery</a>
+                <a href="#contact" class="footer-link text-md transition-colors duration-300">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Define page content as strings
+        const pages = {
+            home: `
+                <section id="home" class="relative h-screen flex items-center justify-center text-center bg-cover bg-center overflow-hidden" style="background-color: #C0392B;">
+                    <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4npuQ0NVTd5ORN68N_V4qaYbeT9sTOUjK4b8OyOgWx3m_xu1iV2XO76tajvNtITGoGl_kYhukq4belakpEn9c8_ljm2we4qro14iG_BiKZHF46zKvxtmW6hvigUCUQsZ6ExQ32vm=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/1920x1080/C0392B/FFF?text=Hero%20Image';" class="absolute inset-0 w-full h-full object-cover z-0 animate-fade-in-up" data-aos="fade-right" />
+                    <div class="absolute inset-0 z-1 animate-fade-in" style="background-image: url('/images/hero1.png'); background-size: cover; background-position: center; opacity: 0.7;"></div>
+                    <div class="relative z-10 p-8 rounded-lg max-w-4xl mx-auto text-white" data-aos="zoom-in" data-aos-delay="300">
+                        <h1 class="text-6xl font-extrabold text-gold-accent leading-tight mb-4 animate-pulse">
+                            Experience the Ride of a Lifetime
+                        </h1>
+                        <h2 class="text-3xl font-semibold text-white mb-6 animate-fade-in-down" data-aos="fade-up" data-aos-delay="600">
+                            Your Journey Starts Here
+                        </h2>
+                        <p class="text-xl text-white mb-8 mx-auto animate-fade-in-down" data-aos="fade-up" data-aos-delay="900">
+                            At The Cycle Store, we believe in the power of two wheels to transform lives. From exhilarating mountain trails to serene city commutes, we offer a curated selection of premium bicycles and accessories designed for every passion and every rider.
+                        </p>
+                        <div class="flex justify-center space-x-4">
+                            <button onclick="navigateTo('products')" class="btn-primary animate-bounce-in" data-aos="fade-up" data-aos-delay="1200">Explore Our Collection</button>
+                            <button onclick="navigateTo('contact')" class="btn-primary bg-transparent text-white border-white hover:bg-white hover:text-black animate-bounce-in" data-aos="fade-up" data-aos-delay="1500" onmouseover="this.style.color='#C0392B'" onmouseout="this.style.color='white'">Find Your Nearest Store</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="home-about-section" class="section-padding bg-white" style="color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center">
+                        <h2 class="text-5xl font-extrabold mb-12" style="color: #C0392B;" data-aos="fade-down">About <span class="text-gold-accent">The Cycle Store</span></h2>
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                            <div class="md:w-1/2 p-6" data-aos="fade-right" data-aos-delay="200">
+                                <p class="text-lg leading-relaxed mb-6">
+                                    Welcome to <strong>The Cycle Store</strong>, your premier destination for high-quality bicycles in Nagpur. Located at Gupta House Commercial Complex, Jaitala Rd, we are dedicated to providing the best cycling experience to our community.
+                                </p>
+                                <p class="text-lg leading-relaxed mb-6">
+                                    With a wide range of cycles for all ages and purposes, from exhilarating mountain bikes to sleek road bikes and comfortable city cruisers, we ensure every customer finds their perfect ride. Our passion for cycling drives us to offer not just products, but a complete lifestyle.
+                                </p>
+                                <p class="text-lg leading-relaxed">
+                                    Come visit us and let our expert team guide you to your next cycling adventure. We believe in quality, performance, and the joy of the ride.
+                                </p>
+                                <button onclick="navigateTo('about')" class="btn-primary text-white mt-6" style="background-color: #C0392B; border-color: #C0392B;" onmouseover="this.style.backgroundColor='#A93226'" onmouseout="this.style.backgroundColor='#C0392B'">Learn More About Us</button>
+                            </div>
+                            <div class="md:w-1/2" data-aos="zoom-in-down" data-aos-delay="400">
+                                <img src="https://lh3.googleusercontent.com/p/AF1QipOU74i2zg-B7lht7BruxRcnvej98U8J-FkCoIcb=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/600x400/C0392B/FFF?text=About%20Us';" alt="About Us Image" class="rounded-xl shadow-2xl border-4 border-gold-accent transform transition-transform duration-500 hover:scale-105" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="home-brands" class="py-10 bg-gray-200" data-aos="fade-up">
+                    <div class="container mx-auto">
+                        <h3 class="text-center text-3xl font-bold mb-8" style="color: #374151;">We Deal With Brands You Trust</h3>
+                        <div class="flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
+                            <img src="data:image/png;base64,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" alt="Scott" class="h-10" data-aos="zoom-in" data-aos-delay="100">
+                            <img src="https://theretailtimes.co.in/wp-content/uploads/2022/01/Company-Logo-Ninety-One-Cycles-Alpha-Vector.jpg" alt="Schnell" class="h-10" data-aos="zoom-in" data-aos-delay="200">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH756ttjXPnd5yj71BqpsL1KtZqc4D_G7LoQ&s" alt="Firefox" class="h-10" data-aos="zoom-in" data-aos-delay="300">
+                            <img src="https://images.seeklogo.com/logo-png/42/1/hercules-cycle-logo-png_seeklogo-425442.png" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                             <img src="https://trinitycyclesindia.com/wp-content/uploads/2023/06/Schnell-1024x576.png" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                              <img src="https://hornback.bike/cdn/shop/files/Preview_Image_2.png?v=1676899161" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                            <img src="https://lirp.cdn-website.com/072a18a0/dms3rep/multi/opt/bsa-motorcycles-logo-1946-1972-640w.png" alt="Ninety One" class="h-10" data
+                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1-f7V-ZWPpiErxEja__GIwZb2MlWS8FUqOg&s" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                              <img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcvSEZmHpck3Bd9m0sr0DyL-nHR9-rNd5Hcw&s" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                               <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoJV5HIEBT4fqZAhde5PR4fyi-bX22gBXsnQ&s" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1-f7V-ZWPpiErxEja__GIwZb2MlWS8FUqOg&s" alt="Ninety One" class="h-10" data-aos="zoom-in" data-aos-delay="400">
+                           </div>
+                    </div>
+                </section>
+
+                <section id="home-gallery-section" class="section-padding text-white" style="background-color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center">
+                        <h2 class="text-5xl font-extrabold text-gold-accent mb-16" data-aos="fade-down">Our <span class="text-white">Gallery</span></h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                           <img src="https://lh3.googleusercontent.com/p/AF1QipOhr1keOuN_cayha4OPWzNIM0CYiZl7vVKTHT94=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%201';" alt="Gallery Image 1" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4no7XL1rcraGj8a9BntVE50FdGusUv1usI9g9UyAE0arpXZSCQtxTyp-pekNOm3DfEi6z7bB5cyMmrLBYONUeW6QNGBTEGr3oY1BwwmfgCWGhfEkd8WbyVz3-ELj6CVVClWQovIi=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%202';" alt="Gallery Image 2" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="100" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipMYkVirnuRpQXl5_x87Khd7gi9POyOIZkFtG7Oz=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%203';" alt="Gallery Image 3" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="200" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrHZ_B9FYmoJN-uqiHwv_W04u2ZnEsgCt5ZzvX5Ect0sxfN7LLxvg-12MkvtrKGoPZPwNHn_YrOUr2Glkgg9HOUOdEoEdC5JzIeZw9KfIRvj2LWWVytOHjzubK8SpFBISluHYA=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%204';" alt="Gallery Image 4" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipNkou3gSKjwpct2kd0o0vDkxjZ6ptqRuQAghxsI=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%205';" alt="Gallery Image 5" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipMGsFI8bycQU_woYTSA4EnojW2FFDGY2aPXLpdE=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nr39QpbhFQdBDjmU6aBaRgdizn33vrWrAZhBJib8sHAaS-yJf5nEuIz4q20H25tYquW8IIze-4z0izEMnVrb8MV9_DY5JZgaWqxEHGXBNRxhauBsZS_M7vGPkq7sWmzzELtSZiO=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nonxzYMcPg3X15-XYBodE6l2-4smNbV__yQdLnx09WzDnJekV9YYvjyn4hra7Uob88iDJ6DHufUzFrFvMCREVg7b3Sxfjf01GaNFcseV25Qm3d6Uzxxwy6tzvHDD5q1neAoqSLqhg=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4noPj0932l9B__urViPqfqhKxCIpbMBQ9gVW_axKKzVOxRI-lp-JSOusHXsq01GHojVtX6XybRm3uQKsadtfeFr6EknjA3eBouTfg8yZ9LxMnY-4wsN4-0FCTWKQP2xg3PMQCrE=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                        </div>
+                        <button onclick="navigateTo('gallery')" class="btn-primary mt-12">View Full Gallery</button>
+                    </div>
+                </section>
+            `,
+            about: `
+                <section id="about" class="section-padding bg-white min-h-screen flex items-center" style="color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center">
+                        <h2 class="text-5xl font-extrabold mb-12" style="color: #C0392B;" data-aos="fade-down">About <span class="text-gold-accent">The Cycle Store</span></h2>
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+                            <div class="md:w-1/2 p-6" data-aos="fade-right" data-aos-delay="200">
+                                <p class="text-lg leading-relaxed mb-6">
+                                    Welcome to <strong>The Cycle Store</strong>, your premier destination for high-quality bicycles in Nagpur. Located at Gupta House Commercial Complex, Jaitala Rd, we are dedicated to providing the best cycling experience to our community.
+                                </p>
+                                <p class="text-lg leading-relaxed mb-6">
+                                    With a wide range of cycles for all ages and purposes, from exhilarating mountain bikes to sleek road bikes and comfortable city cruisers, we ensure every customer finds their perfect ride. Our passion for cycling drives us to offer not just products, but a complete lifestyle.
+                                </p>
+                                <p class="text-lg leading-relaxed">
+                                    Come visit us and let our expert team guide you to your next cycling adventure. We believe in quality, performance, and the joy of the ride.
+                                </p>
+                            </div>
+                            <div class="md:w-1/2" data-aos="zoom-in-down" data-aos-delay="400">
+                                <img src="https://lh3.googleusercontent.com/p/AF1QipOU74i2zg-B7lht7BruxRcnvej98U8J-FkCoIcb=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/600x400/C0392B/FFF?text=About%20Us';" alt="About Us Image" class="rounded-xl shadow-2xl border-4 border-gold-accent transform transition-transform duration-500 hover:scale-105" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `,
+            products: `
+                <section id="products" class="section-padding text-white min-h-screen flex items-center" style="background-color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center">
+                        <h2 class="text-5xl font-extrabold text-gold-accent mb-16" data-aos="fade-down">Our <span class="text-white">Products</span></h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="100">
+                                <img src="https://reidbikes.com/cdn/shop/files/MTB-Sport-MY24-1_1.png?v=1730605841" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=Mountain%20Bike';" alt="Mountain Bike" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">Mountain Bikes</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Conquer any trail with our robust and high-performance mountain bikes, designed for adventure.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="200">
+                                <img src="https://ahoybikes.com/wp-content/uploads/2023/09/MADON-Road-Bike-Grey.jpg.webp" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=Road%20Bike';" alt="Road Bike" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">Road Bikes</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Experience speed and efficiency with our lightweight and aerodynamic road bikes, built for the asphalt.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="300">
+                                <img src="https://m.media-amazon.com/images/I/7189lOKweuL._AC_UF894,1000_QL80_.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=City%20Commuter';" alt="City Commuter" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">City & Hybrid</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Navigate urban landscapes with ease and comfort on our versatile city and hybrid bicycles.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="400">
+                                <img src="https://www.jiomart.com/images/product/original/493831600/east-coast-georgia-20t-kids-cycle-5-to-8-years-dual-shade-yellow-red-product-images-o493831600-p604517233-0-202501271148.png?im=Resize=(420,420)" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=Kids%20Bike';" alt="Kids Bike" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">Kids Bikes</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Ignite the joy of cycling in your little ones with our safe and fun range of kids' bicycles.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="500">
+                                <img src="https://d2f9uwgpmber13.cloudfront.net/public/uploads/mobile/8bd78f1abe045c311729516406850.jpg" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=Electric%20Bike';" alt="Electric Bike" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">Electric Bikes</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Boost your ride with our cutting-edge electric bikes, offering effortless power and extended range.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gold-accent transform transition-transform duration-300 hover:scale-105" data-aos="fade-up" data-aos-delay="600">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGza73TRboeCTeVc8vnrMHiOE2UNMpjTdxgA&s" onerror="this.onerror=null; this.src='https://placehold.co/400x250/EEE/C0392B?text=Accessories';" alt="Accessories" class="w-full h-64 object-cover" />
+                                <div class="p-6" style="color: #C0392B;">
+                                    <h3 class="text-3xl font-bold mb-3" style="color: #C0392B;">Accessories</h3>
+                                    <p class="text-gray-700 text-lg mb-4">Enhance your cycling experience with our wide range of essential and stylish accessories.</p>
+                                    <button class="btn-primary">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `,
+            gallery: `
+                <section id="gallery" class="section-padding bg-white min-h-screen flex items-center" style="color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center">
+                        <h2 class="text-5xl font-extrabold mb-16" style="color: #C0392B;" data-aos="fade-down">Our <span class="text-gold-accent">Gallery</span></h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipOhr1keOuN_cayha4OPWzNIM0CYiZl7vVKTHT94=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%201';" alt="Gallery Image 1" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4no7XL1rcraGj8a9BntVE50FdGusUv1usI9g9UyAE0arpXZSCQtxTyp-pekNOm3DfEi6z7bB5cyMmrLBYONUeW6QNGBTEGr3oY1BwwmfgCWGhfEkd8WbyVz3-ELj6CVVClWQovIi=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%202';" alt="Gallery Image 2" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="100" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipMYkVirnuRpQXl5_x87Khd7gi9POyOIZkFtG7Oz=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%203';" alt="Gallery Image 3" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="200" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrHZ_B9FYmoJN-uqiHwv_W04u2ZnEsgCt5ZzvX5Ect0sxfN7LLxvg-12MkvtrKGoPZPwNHn_YrOUr2Glkgg9HOUOdEoEdC5JzIeZw9KfIRvj2LWWVytOHjzubK8SpFBISluHYA=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%204';" alt="Gallery Image 4" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipNkou3gSKjwpct2kd0o0vDkxjZ6ptqRuQAghxsI=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%205';" alt="Gallery Image 5" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/p/AF1QipMGsFI8bycQU_woYTSA4EnojW2FFDGY2aPXLpdE=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nr39QpbhFQdBDjmU6aBaRgdizn33vrWrAZhBJib8sHAaS-yJf5nEuIz4q20H25tYquW8IIze-4z0izEMnVrb8MV9_DY5JZgaWqxEHGXBNRxhauBsZS_M7vGPkq7sWmzzELtSZiO=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4nonxzYMcPg3X15-XYBodE6l2-4smNbV__yQdLnx09WzDnJekV9YYvjyn4hra7Uob88iDJ6DHufUzFrFvMCREVg7b3Sxfjf01GaNFcseV25Qm3d6Uzxxwy6tzvHDD5q1neAoqSLqhg=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                            <img src="https://lh3.googleusercontent.com/gps-cs-s/AC9h4noPj0932l9B__urViPqfqhKxCIpbMBQ9gVW_axKKzVOxRI-lp-JSOusHXsq01GHojVtX6XybRm3uQKsadtfeFr6EknjA3eBouTfg8yZ9LxMnY-4wsN4-0FCTWKQP2xg3PMQCrE=s680-w680-h510-rw" onerror="this.onerror=null; this.src='https://placehold.co/400x250/C0392B/FFF?text=Gallery%206';" alt="Gallery Image 6" class="gallery-img border-4 border-gold-accent" data-aos="zoom-in" data-aos-delay="300" />
+                        </div>
+                    </div>
+                </section>
+            `,
+            contact: `
+                <section id="contact" class="section-padding text-white min-h-screen" style="background-color: #C0392B;" data-aos="fade-up">
+                    <div class="container mx-auto text-center px-4">
+                        <h2 class="text-5xl font-extrabold text-gold-accent mb-12" data-aos="fade-down">Contact <span class="text-white">Us</span></h2>
+                        <div class="flex flex-col md:flex-row gap-12 items-stretch justify-center">
+                            <!-- Contact Info -->
+                            <div class="bg-white p-8 rounded-xl shadow-xl w-full md:w-1/2 flex flex-col text-left" style="color: #C0392B;" data-aos="fade-right" data-aos-delay="200">
+                                <div>
+                                    <h3 class="text-3xl font-bold mb-6 text-center" style="color: #C0392B;">Store Details</h3>
+                                    <p class="text-lg mb-4"><i class="fas fa-map-marker-alt mr-3" style="color: #C0392B;"></i> <strong>Address:</strong> Gupta house Commercial Complex, Jaitala Rd, opposite Aditya Angha Bank, Prasad Nagar, Nagpur, Maharashtra 440022</p>
+                                    <p class="text-lg mb-4"><i class="fas fa-phone-alt mr-3" style="color: #C0392B;"></i> <strong>Phone:</strong> <a href="tel:+918600554400" class="transition-colors duration-300" style="color: #C0392B;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#C0392B'">+91 086005 54400</a></p>
+                                    <p class="text-lg mb-4"><i class="fas fa-clock mr-3" style="color: #C0392B;"></i> <strong>Hours:</strong> Opens 11 AM</p>
+                                    <p class="text-lg mb-6"><i class="fas fa-globe-asia mr-3" style="color: #C0392B;"></i> <strong>Areas served:</strong> Nagpur</p>
+                                </div>
+                                <div class="flex-grow"></div>
+                                <div class="mt-auto text-center">
+                                    <h3 class="text-3xl font-bold mb-6 mt-8" style="color: #C0392B;">Connect With Us</h3>
+                                    <div class="flex justify-center space-x-6">
+                                        <a href="https://www.instagram.com/thecyclestorenagpur/" target="_blank" rel="noopener noreferrer" class="transition-colors duration-300" style="color: #C0392B;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#C0392B'">
+                                            <i class="fab fa-instagram text-5xl"></i>
+                                        </a>
+                                        <a href="https://www.facebook.com/thecyclestorenagpur/" target="_blank" rel="noopener noreferrer" class="transition-colors duration-300" style="color: #C0392B;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#C0392B'">
+                                            <i class="fab fa-facebook text-5xl"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Inquiry Form -->
+                            <div class="bg-white p-8 rounded-xl shadow-xl w-full md:w-1/2 flex flex-col" style="color: #C0392B;" data-aos="fade-left" data-aos-delay="300">
+                                <form onsubmit="sendWhatsAppInquiry(); return false;" class="flex flex-col h-full">
+                                    <h3 class="text-3xl font-bold mb-6 text-center" style="color: #C0392B;">Have an Inquiry?</h3>
+                                    <div>
+                                        <div class="mb-4 text-left">
+                                            <label for="name" class="block text-lg font-semibold mb-2">Name</label>
+                                            <input type="text" id="name" name="name" class="form-input" placeholder="Your Name" required>
+                                        </div>
+                                        <div class="mb-4 text-left">
+                                            <label for="email" class="block text-lg font-semibold mb-2">Email</label>
+                                            <input type="email" id="email" name="email" class="form-input" placeholder="Your Email" required>
+                                        </div>
+                                        <div class="mb-6 text-left">
+                                            <label for="message" class="block text-lg font-semibold mb-2">Message</label>
+                                            <textarea id="message" name="message" rows="4" class="form-input" placeholder="Your Message" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow"></div>
+                                    <button type="submit" class="btn-primary w-full text-white mt-auto" style="background-color: #25D366; border-color: #25D366;" onmouseover="this.style.backgroundColor='#1DAE54'" onmouseout="this.style.backgroundColor='#25D366'">
+                                        <i class="fab fa-whatsapp mr-2"></i> Send via WhatsApp
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Google Map -->
+                        <div class="mt-16" data-aos="fade-up" data-aos-delay="400">
+                            <h3 class="text-4xl font-extrabold text-gold-accent mb-8">Find Us Here</h3>
+                            <div class="rounded-xl shadow-2xl overflow-hidden border-4 border-gold-accent">
+                                <iframe
+                                    src="https://maps.google.com/maps?q=Gupta%20house%20Commercial%20Complex,%20Jaitala%20Rd,%20opposite%20Aditya%20Angha%20Bank,%20Prasad%20Nagar,%20Nagpur,%20Maharashtra%20440022&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    width="100%"
+                                    height="450"
+                                    style="border:0;"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `
+        };
+
+        const appContent = document.getElementById('app-content');
+        const menuToggle = document.getElementById('menu-toggle');
+        const navbarLinks = document.getElementById('navbar-links');
+
+        // Function to load page content
+        function loadPage(pageName) {
+            if (pages[pageName]) {
+                appContent.innerHTML = pages[pageName];
+                // Re-initialize AOS after new content is loaded
+                AOS.refresh();
+                window.scrollTo(0, 0); // Scroll to top of the new page
+            } else {
+                appContent.innerHTML = `<section class="section-padding text-center min-h-screen flex items-center justify-center text-white" style="background-color: #C0392B;" data-aos="fade-in">
+                                            <h2 class="text-4xl font-bold">Page Not Found</h2>
+                                        </section>`;
+            }
+            // Close mobile menu if open
+            if (navbarLinks.classList.contains('active')) {
+                navbarLinks.classList.remove('active');
+            }
+        }
+
+        // Function to handle sending inquiry via WhatsApp
+        function sendWhatsAppInquiry() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            const phone = '+918600554400';
+
+            if (name && email && message) {
+                const whatsappMessage = `Hello, this is an inquiry from the website:%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Message:* ${message}`;
+                const whatsappUrl = `https://wa.me/${phone}?text=${whatsappMessage}`;
+                window.open(whatsappUrl, '_blank');
+            } else {
+                alert('Please fill out all fields before sending.');
+            }
+        }
+
+        // Function to handle navigation
+        function navigateTo(pageName) {
+            history.pushState({ page: pageName }, '', `#${pageName}`);
+            loadPage(pageName);
+        }
+
+        // Event listeners for navigation links
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize AOS
+            AOS.init({
+                duration: 1000, // global duration for animations
+                once: true,    // whether animation should happen only once - while scrolling down
+                easing: 'ease-in-out', // easing for animations
+            });
+
+            // Set up event listeners for navbar links
+            document.querySelectorAll('.navbar-link, .footer-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    const pageName = e.target.getAttribute('href').substring(1); // Get page name from href
+                    navigateTo(pageName);
+                });
+            });
+
+            // Event listener for the "Explore Our Collection" and "Find Your Nearest Store" buttons on the home page
+            appContent.addEventListener('click', (e) => {
+                if (e.target.closest('button')) {
+                    const buttonText = e.target.closest('button').textContent.trim();
+                     if (buttonText === 'Explore Our Collection') {
+                        navigateTo('products');
+                    } else if (buttonText === 'Find Your Nearest Store') {
+                        navigateTo('contact');
+                    } else if (buttonText === 'Learn More About Us') {
+                        navigateTo('about');
+                    } else if (buttonText === 'View Full Gallery') {
+                        navigateTo('gallery');
+                    }
+                }
+            });
+
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                navbarLinks.classList.toggle('active');
+                navbarLinks.classList.toggle('hidden');
+            });
+
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', (event) => {
+                const pageName = event.state ? event.state.page : 'home';
+                loadPage(pageName);
+            });
+
+            // Initial page load based on URL hash or default to home
+            const initialPage = window.location.hash ? window.location.hash.substring(1) : 'home';
+            navigateTo(initialPage);
+        });
+    </script>
+</body>
+</html>
